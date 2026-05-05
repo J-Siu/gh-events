@@ -1,0 +1,5 @@
+.DS_Store
+build
+gh-events
+gh-events.exe
+go.work*
