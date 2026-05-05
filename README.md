@@ -1,6 +1,6 @@
 # gh-events
 
-Github api `users/{user}/received_events` listing.
+List Github api `users/<USER>/received_events` output.
 
 ## Usage
 
