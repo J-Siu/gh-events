@@ -1,2 +1,5 @@
 - v1.0.0
   - Initial commit
+- v1.1.0
+  - add public endpoint
+  - mv dump to `-d`

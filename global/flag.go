@@ -23,11 +23,12 @@ THE SOFTWARE.
 package global
 
 type TypeFlag struct {
-	All   bool
-	Debug bool
-	Time  bool
-	Type  bool
-	Url   bool
+	All    bool
+	Dump   bool
+	Public bool
+	Time   bool
+	Type   bool
+	Url    bool
 }
 
 var Flag TypeFlag

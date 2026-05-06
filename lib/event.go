@@ -236,10 +236,10 @@ func (t *Events) Print(all, showTime, showType, showUrl bool) {
 			info.StrTime = ""
 		}
 		if showType {
-			if info.StrTypeAction != "" {
-				info.StrAction += "\t(" + info.StrType + ":" + info.StrTypeAction + ")"
-			} else {
+			if info.StrTypeAction == "" {
 				info.StrAction += "\t(" + info.StrType + ")"
+			} else {
+				info.StrAction += "\t(" + info.StrType + ":" + info.StrTypeAction + ")"
 			}
 		}
 		if showUrl {

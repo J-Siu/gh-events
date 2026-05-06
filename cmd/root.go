@@ -28,6 +28,7 @@ import (
 
 	"github.com/J-Siu/gh-events/global"
 	"github.com/J-Siu/gh-events/lib"
+	"github.com/J-Siu/go-helper/v2/strany"
 	"github.com/cli/go-gh/v2/pkg/api"
 	"github.com/spf13/cobra"
 )
@@ -38,19 +39,34 @@ var rootCmd = &cobra.Command{
 	Version: global.Version,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
-			actor  lib.Actor
-			events lib.Events
+			actor    lib.Actor
+			endpoint string
 		)
+
+		// login user
 		client, err := api.DefaultRESTClient()
 		if err == nil {
 			err = client.Get("user", &actor)
 		}
+
 		if err == nil {
-			err = client.Get("users/"+*actor.Login+"/received_events", &events)
+			endpoint = "users/" + *actor.Login + "/received_events"
+			if global.Flag.Public {
+				endpoint += "/public"
+			}
+			if global.Flag.Dump { // dump raw json
+				var events any
+				if err = client.Get(endpoint, &events); err == nil {
+					fmt.Println(*strany.String(events))
+				}
+			} else { // format events
+				var events lib.Events
+				if err = client.Get(endpoint, &events); err == nil {
+					events.Print(global.Flag.All, global.Flag.Time, global.Flag.Type, global.Flag.Url)
+				}
+			}
 		}
-		if err == nil {
-			events.Print(global.Flag.All, global.Flag.Time, global.Flag.Type, global.Flag.Url)
-		}
+
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -58,15 +74,16 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
-	err := rootCmd.Execute()
-	if err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
 
 func init() {
 	rootCmd.Flags().BoolVarP(&global.Flag.All, "all", "a", false, "show skipped event")
+	rootCmd.Flags().BoolVarP(&global.Flag.Public, "public", "p", false, "show public events")
 	rootCmd.Flags().BoolVarP(&global.Flag.Time, "create-time", "c", false, "show create time")
 	rootCmd.Flags().BoolVarP(&global.Flag.Type, "type", "t", false, "show event type")
 	rootCmd.Flags().BoolVarP(&global.Flag.Url, "url", "u", false, "show full url")
+	rootCmd.Flags().BoolVarP(&global.Flag.Dump, "dump", "d", false, "dump raw json")
 }
