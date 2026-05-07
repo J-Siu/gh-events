@@ -76,6 +76,8 @@ func (e *Event) GetInfo() (info EventInfo) {
 	}
 
 	switch *e.Type {
+	case "CreateEvent":
+		info.StrTxt = *e.Payload.Description
 	case "ForkEvent": // nothing to do
 	case "IssueCommentEvent":
 		actionFilter = []string{"labeled"}

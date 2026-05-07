@@ -6,6 +6,7 @@ type Payload struct {
 }
 
 type PayloadProperties struct {
+	*CreateEvent
 	*ForkEvent
 	*IssueCommentEvent
 	*IssuesEvent
@@ -16,14 +17,18 @@ type PayloadProperties struct {
 	*WatchEvent
 }
 type PayloadPropertiesShared struct {
-	Action    *string             `json:"action,omitempty"`       // ALL Events
-	Assignee  any                 `json:"assignee,omitempty"`     // PullRequestEvent
-	Assignees any                 `json:"assignees,omitempty"`    // PullRequestEvent
-	Comment   *Comment            `json:"comment,omitempty"`      // IssueCommentEvent
-	Issue     *Issue              `json:"issue,omitempty"`        // IssueCommentEvent, IssueEvent
-	Label     any                 `json:"label,omitempty"`        // PullRequestEvent
-	Labels    any                 `json:"labels,omitempty"`       // PullRequestEvent
-	PR        *PullRequestMinimal `json:"pull_request,omitempty"` // PullRequestEvent, PullRequestReviewCommentEvent, PullRequestReviewEvent
+	Action     *string             `json:"action,omitempty"`       // ALL Events
+	Assignee   any                 `json:"assignee,omitempty"`     // PullRequestEvent
+	Assignees  any                 `json:"assignees,omitempty"`    // PullRequestEvent
+	Comment    *Comment            `json:"comment,omitempty"`      // IssueCommentEvent
+	Issue      *Issue              `json:"issue,omitempty"`        // IssueCommentEvent, IssueEvent
+	Label      any                 `json:"label,omitempty"`        // PullRequestEvent
+	Labels     any                 `json:"labels,omitempty"`       // PullRequestEvent
+	PR         *PullRequestMinimal `json:"pull_request,omitempty"` // PullRequestEvent, PullRequestReviewCommentEvent, PullRequestReviewEvent
+	Ref        *string             `json:"ref,omitempty"`          // CreateEvent
+	RefType    *string             `json:"ref_type,omitempty"`     // CreateEvent
+	PusherType *string             `json:"pusher_type,omitempty"`  // CreateEvent
+	FullRef    *string             `json:"full_ref,omitempty"`     // CreateEvent
 }
 
 type ForkEvent struct {
@@ -84,8 +89,21 @@ type WatchEvent struct {
 	// Action *string `json:"action,omitempty"`
 }
 
-type CreateEvent struct{}
-type DeleteEvent struct{}
+type CreateEvent struct {
+	// Ref         *string `json:"ref,omitempty"`
+	// RefType     *string `json:"ref_type,omitempty"`
+	// PusherType  *string `json:"pusher_type,omitempty"`
+	// FullRef     *string `json:"full_ref,omitempty"`
+	Description *string `json:"description,omitempty"`
+}
+
+type DeleteEvent struct {
+	// Ref        *string `json:"ref,omitempty"`
+	// RefType    *string `json:"ref_type,omitempty"`
+	// PusherType *string `json:"pusher_type,omitempty"`
+	// FullRef    *string `json:"full_ref,omitempty"`
+}
+
 type DiscussionEvent struct{}
 type GollumEvent struct{}
 type MemberEvent struct{}
