@@ -16,8 +16,33 @@ type Comment struct {
 	IssueUrl *string `json:"issue_url"`
 }
 
+// ForkEvent Payload
+type Forkee struct {
+	Forks_url *string `json:"forks_url,omitempty"`
+	FullName  *string `json:"full_name,omitempty"`
+	Name      *string `json:"name,omitempty"`
+	Url       *string `json:"url,omitempty"`
+}
+
+// IssueEvent Payload
+type Issue struct {
+	Comments_url  *string           `json:"comments_url"`
+	Events_url    *string           `json:"events_url"`
+	HtmlUrl       *string           `json:"html_url"`
+	Number        *int64            `json:"number,omitempty"`
+	PullRequest   *IssuePullRequest `json:"pull_request,omitempty"`
+	RepositoryUrl *string           `json:"repository_url"`
+	Title         *string           `json:"title,omitempty"`
+	Url           *string           `json:"url"`
+}
+
+type IssuePullRequest struct {
+	HtmlUrl *string `json:"html_url"`
+	Url     *string `json:"url"`
+}
+
 // PullRequestEvent, PullRequestReviewCommentEvent, PullRequestReviewEvent
-type PR_Minimal struct {
+type PullRequestMinimal struct {
 	Base   any     `json:"base"`
 	Head   any     `json:"head"`
 	Id     *int64  `json:"id,omitempty"`
@@ -29,6 +54,12 @@ type Repo struct {
 	Id   *int64  `json:"id"`
 	Name *string `json:"name"`
 	Url  *string `json:"url"`
+}
+
+type Release struct {
+	HtmlUrl *string `json:"html_url"`
+	TagName *string `json:"tag_name"`
+	Url     *string `json:"url"`
 }
 
 // PullRequestReviewEvent
