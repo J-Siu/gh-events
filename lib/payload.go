@@ -56,8 +56,8 @@ type PullRequestEvent struct {
 	// Assignees any                 `json:"assignees,omitempty"`
 	// Label     any                 `json:"label,omitempty"`
 	// Labels    any                 `json:"labels,omitempty"`
-	// Number    *int64              `json:"number,omitempty"`
 	// PR_M      *PullRequestMinimal `json:"pull_request,omitempty"`
+	Number *int64 `json:"number,omitempty"`
 }
 
 type PullRequestReviewCommentEvent struct {

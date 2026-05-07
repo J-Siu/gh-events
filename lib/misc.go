@@ -20,6 +20,7 @@ type Comment struct {
 type Forkee struct {
 	Forks_url *string `json:"forks_url,omitempty"`
 	FullName  *string `json:"full_name,omitempty"`
+	HtmlUrl   *string `json:"html_url"`
 	Name      *string `json:"name,omitempty"`
 	Url       *string `json:"url,omitempty"`
 }

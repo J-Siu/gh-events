@@ -80,6 +80,7 @@ func (e *Event) GetInfo() (info EventInfo) {
 	case "CreateEvent":
 		info.StrTxt = *e.Payload.Description
 	case "ForkEvent": // nothing to do
+		info.StrUrl = *e.Payload.Forkee.HtmlUrl
 	case "IssueCommentEvent":
 		actionFilter = []string{"labeled"}
 		if str.ArrayContains(&actionFilter, e.Payload.Action, false) {
@@ -94,7 +95,7 @@ func (e *Event) GetInfo() (info EventInfo) {
 		} else {
 			info.StrTxt = "PR#" // prefix for PR
 		}
-		info.StrTxt = info.StrTxt + strconv.FormatInt(*e.Payload.Issue.Number, 10) + " " + *e.Payload.Issue.Title
+		info.StrTxt += strconv.FormatInt(*e.Payload.Issue.Number, 10) + " " + *e.Payload.Issue.Title
 		info.StrUrl = *e.Payload.Comment.HtmlUrl
 	case "IssuesEvent":
 		actionFilter = []string{"labeled"}
@@ -108,7 +109,9 @@ func (e *Event) GetInfo() (info EventInfo) {
 		if str.ArrayContains(&actionFilter, e.Payload.Action, false) {
 			skip = true
 		}
-		info.StrUrl += "/pull/" + strconv.FormatInt(*e.Payload.PR.Number, 10)
+		info.StrTxt = strconv.FormatInt(*e.Payload.PR.Number, 10)
+		info.StrUrl += "/pull/" + info.StrTxt
+		info.StrTxt = "PR#" + info.StrTxt
 	case "PullRequestReviewCommentEvent":
 		switch *e.Payload.Action {
 		case "created":
