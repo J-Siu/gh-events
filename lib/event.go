@@ -119,7 +119,7 @@ func (e *Event) GetInfo() (info EventInfo) {
 		case "created":
 			info.StrAction = "commented"
 		}
-		info.StrTxt = " PR#" + strconv.FormatInt(*e.Payload.PR.Number, 10)
+		info.StrTxt = "PR#" + strconv.FormatInt(*e.Payload.PR.Number, 10)
 		info.StrUrl = *e.Payload.Comment.HtmlUrl
 	case "WatchEvent":
 		info.StrAction = "starred"
