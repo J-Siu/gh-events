@@ -5,3 +5,5 @@
   - mv dump to `-d`
 - v1.1.1
   - support json output filter
+- v1.1.2
+  - filter support original action string
