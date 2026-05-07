@@ -3,3 +3,5 @@
 - v1.1.0
   - add public endpoint
   - mv dump to `-d`
+- v1.1.1
+  - support json output filter
