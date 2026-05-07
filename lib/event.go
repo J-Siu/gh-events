@@ -147,7 +147,7 @@ func (t *Events) Print(all, showTime, showType, showUrl bool, filter []string) {
 
 	for _, e := range *t {
 		info := e.GetInfo()
-		if len(filter) > 0 && matchFilter(filter, info.StrAction, info.StrType) {
+		if len(filter) > 0 && matchFilter(filter, info.StrAction, info.StrTypeAction, info.StrType) {
 			continue
 		}
 		if !all && strings.EqualFold(info.StrAction, global.STR_NOT_HANDLED) {
@@ -190,7 +190,7 @@ func (t *EventsJson) Print(filter []string) {
 		)
 		strType, _ = e.(map[string]any)["type"].(string)
 		strAction, _ = e.(map[string]any)["payload"].(map[string]any)["action"].(string)
-		if len(filter) > 0 && matchFilter(filter, strAction, strType) {
+		if len(filter) > 0 && matchFilter(filter, strAction, "", strType) {
 			continue
 		}
 		if printed {
@@ -208,8 +208,9 @@ func (t *EventsJson) Print(filter []string) {
 	fmt.Println("]")
 }
 
-func matchFilter(filter []string, strAction, strType string) bool {
+func matchFilter(filter []string, strAction, strPayloadAction, strType string) bool {
 	return !(strAction != "" && matchSubstrings(filter, strAction) ||
+		strPayloadAction != "" && matchSubstrings(filter, strPayloadAction) ||
 		strType != "" && matchSubstrings(filter, strType))
 }
 
