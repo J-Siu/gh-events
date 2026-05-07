@@ -28,7 +28,6 @@ import (
 
 	"github.com/J-Siu/gh-events/global"
 	"github.com/J-Siu/gh-events/lib"
-	"github.com/J-Siu/go-helper/v2/strany"
 	"github.com/cli/go-gh/v2/pkg/api"
 	"github.com/spf13/cobra"
 )
@@ -54,15 +53,16 @@ var rootCmd = &cobra.Command{
 			if global.Flag.Public {
 				endpoint += "/public"
 			}
-			if global.Flag.Dump { // dump raw json
-				var events any
+
+			if global.Flag.Json {
+				var events lib.EventsJson
 				if err = client.Get(endpoint, &events); err == nil {
-					fmt.Println(*strany.String(events))
+					events.Print(global.Flag.Filter)
 				}
-			} else { // format events
+			} else {
 				var events lib.Events
 				if err = client.Get(endpoint, &events); err == nil {
-					events.Print(global.Flag.All, global.Flag.Time, global.Flag.Type, global.Flag.Url)
+					events.Print(global.Flag.All, global.Flag.Time, global.Flag.Type, global.Flag.Url, global.Flag.Filter)
 				}
 			}
 		}
@@ -81,9 +81,10 @@ func Execute() {
 
 func init() {
 	rootCmd.Flags().BoolVarP(&global.Flag.All, "all", "a", false, "show skipped event")
+	rootCmd.Flags().BoolVarP(&global.Flag.Json, "json", "j", false, "show raw json")
 	rootCmd.Flags().BoolVarP(&global.Flag.Public, "public", "p", false, "show public events")
 	rootCmd.Flags().BoolVarP(&global.Flag.Time, "create-time", "c", false, "show create time")
 	rootCmd.Flags().BoolVarP(&global.Flag.Type, "type", "t", false, "show event type")
 	rootCmd.Flags().BoolVarP(&global.Flag.Url, "url", "u", false, "show full url")
-	rootCmd.Flags().BoolVarP(&global.Flag.Dump, "dump", "d", false, "dump raw json")
+	rootCmd.Flags().StringArrayVarP(&global.Flag.Filter, "filter", "f", []string{}, "show events by action, type")
 }

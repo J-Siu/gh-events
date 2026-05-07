@@ -30,6 +30,7 @@ import (
 
 	"github.com/J-Siu/gh-events/global"
 	"github.com/J-Siu/go-helper/v2/str"
+	"github.com/J-Siu/go-helper/v2/strany"
 	"github.com/juju/ansiterm"
 )
 
@@ -139,13 +140,16 @@ func (e *Event) GetInfo() (info EventInfo) {
 
 type Events []Event
 
-func (t *Events) Print(all, showTime, showType, showUrl bool) {
+func (t *Events) Print(all, showTime, showType, showUrl bool, filter []string) {
 	var (
 		tabWriter = ansiterm.NewTabWriter(os.Stdout, 1, 1, 1, ' ', 0)
 	)
 
 	for _, e := range *t {
 		info := e.GetInfo()
+		if len(filter) > 0 && matchFilter(filter, info.StrAction, info.StrType) {
+			continue
+		}
 		if !all && strings.EqualFold(info.StrAction, global.STR_NOT_HANDLED) {
 			continue
 		}
@@ -166,4 +170,55 @@ func (t *Events) Print(all, showTime, showType, showUrl bool) {
 		fmt.Fprintln(tabWriter, strings.Join([]string{info.StrTime, info.StrLogin, info.StrAction, info.StrRepo + " " + info.StrTxt}, "\t"))
 	}
 	tabWriter.Flush()
+}
+
+type EventJson any
+
+type EventsJson []EventJson
+
+func (t *EventsJson) Print(filter []string) {
+	var (
+		printed      bool
+		printedCount int
+	)
+
+	fmt.Print("[")
+	for _, e := range *t {
+		var (
+			strAction string
+			strType   string
+		)
+		strType, _ = e.(map[string]any)["type"].(string)
+		strAction, _ = e.(map[string]any)["payload"].(map[string]any)["action"].(string)
+		if len(filter) > 0 && matchFilter(filter, strAction, strType) {
+			continue
+		}
+		if printed {
+			fmt.Println(",")
+		} else {
+			fmt.Println()
+		}
+		fmt.Print(*strany.String(e))
+		printed = true
+		printedCount++
+	}
+	if printedCount > 0 {
+		fmt.Println()
+	}
+	fmt.Println("]")
+}
+
+func matchFilter(filter []string, strAction, strType string) bool {
+	return !(strAction != "" && matchSubstrings(filter, strAction) ||
+		strType != "" && matchSubstrings(filter, strType))
+}
+
+// return true if any of the substrings is contained in str, case insensitive
+func matchSubstrings(substrings []string, str string) bool {
+	for _, s := range substrings {
+		if strings.Contains(strings.ToLower(str), strings.ToLower(s)) {
+			return true
+		}
+	}
+	return false
 }

@@ -24,7 +24,8 @@ package global
 
 type TypeFlag struct {
 	All    bool
-	Dump   bool
+	Filter []string
+	Json   bool
 	Public bool
 	Time   bool
 	Type   bool
