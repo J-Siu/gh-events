@@ -40,7 +40,7 @@ type Event struct {
 type EventProperties struct {
 	Actor     *Actor   `json:"actor"`
 	CreatedAt *string  `json:"created_at"`
-	ID        *string  `json:"id"`
+	Id        *string  `json:"id"`
 	Org       *Actor   `json:"org,omitempty"`
 	Payload   *Payload `json:"payload"`
 	Public    *bool    `json:"public"`
@@ -76,8 +76,7 @@ func (e *Event) GetInfo() (info EventInfo) {
 	}
 
 	switch *e.Type {
-	case "ForkEvent":
-		// nothing to do
+	case "ForkEvent": // nothing to do
 	case "IssueCommentEvent":
 		actionFilter = []string{"labeled"}
 		if str.ArrayContains(&actionFilter, e.Payload.Action, false) {
@@ -106,14 +105,7 @@ func (e *Event) GetInfo() (info EventInfo) {
 		if str.ArrayContains(&actionFilter, e.Payload.Action, false) {
 			skip = true
 		}
-		info.StrUrl = info.StrRepo + "/pull/" + strconv.FormatInt(*e.Payload.PR.Number, 10)
-	case "PullRequestReviewEvent":
-		switch *e.Payload.Action {
-		case "created":
-			info.StrAction = "reviewed"
-		}
-		info.StrTxt = "PR#" + strconv.FormatInt(*e.Payload.PR.Number, 10)
-		info.StrUrl = *e.Payload.Review.HtmlUrl
+		info.StrUrl += "/pull/" + strconv.FormatInt(*e.Payload.PR.Number, 10)
 	case "PullRequestReviewCommentEvent":
 		switch *e.Payload.Action {
 		case "created":
@@ -121,10 +113,17 @@ func (e *Event) GetInfo() (info EventInfo) {
 		}
 		info.StrTxt = "PR#" + strconv.FormatInt(*e.Payload.PR.Number, 10)
 		info.StrUrl = *e.Payload.Comment.HtmlUrl
-	case "WatchEvent":
-		info.StrAction = "starred"
+	case "PullRequestReviewEvent":
+		switch *e.Payload.Action {
+		case "created":
+			info.StrAction = "reviewed"
+		}
+		info.StrTxt = "PR#" + strconv.FormatInt(*e.Payload.PR.Number, 10)
+		info.StrUrl = *e.Payload.Review.HtmlUrl
 	case "ReleaseEvent":
 		info.StrUrl = *e.Payload.Release.HtmlUrl
+	case "WatchEvent":
+		info.StrAction = "starred"
 	default:
 		skip = true
 	}
