@@ -29,7 +29,6 @@ import (
 	"strings"
 
 	"github.com/J-Siu/gh-events/global"
-	"github.com/J-Siu/go-helper/v2/str"
 	"github.com/juju/ansiterm"
 )
 
@@ -39,6 +38,7 @@ type EventInfo struct {
 	StrRepo       string
 	StrTime       string
 	StrTxt        string
+	StrTxtPrefix  string
 	StrType       string
 	StrTypeAction string
 	StrUrl        string // url for PR, issue, comment, publish, depends on event type, default to repo url
@@ -46,8 +46,7 @@ type EventInfo struct {
 
 func (t *EventInfo) New(event *Event) *EventInfo {
 	var (
-		actionFilter []string
-		skip         bool
+		skip bool
 	)
 
 	t.StrLogin = *event.Actor.Login
@@ -62,39 +61,40 @@ func (t *EventInfo) New(event *Event) *EventInfo {
 
 	switch *event.Type {
 	case "CreateEvent":
-		t.StrTxt = *event.Payload.Description
+		if event.Payload.Description != nil {
+			t.StrTxt = *event.Payload.Description
+		}
+		t.StrAction = "created"
+		t.StrUrl += "/tree/" + *event.Payload.Ref
 	case "ForkEvent": // nothing to do
 		t.StrUrl = *event.Payload.Forkee.HtmlUrl
 	case "IssueCommentEvent":
-		actionFilter = []string{"labeled"}
-		if str.ArrayContains(&actionFilter, event.Payload.Action, false) {
-			skip = true
-		}
 		switch *event.Payload.Action {
 		case "created":
 			t.StrAction = "commented"
 		}
 		if event.Payload.Issue.PullRequest == nil {
-			t.StrTxt = "Issue#" // prefix for Issue
+			t.StrTxtPrefix = "Issue#" // prefix for Issue
 		} else {
-			t.StrTxt = "PR#" // prefix for PR
+			t.StrTxtPrefix = "PR#" // prefix for PR
 		}
-		t.StrTxt += strconv.FormatInt(*event.Payload.Issue.Number, 10) + " " + *event.Payload.Issue.Title
+		t.StrTxtPrefix += strconv.FormatInt(*event.Payload.Issue.Number, 10)
+		t.StrTxt = *event.Payload.Issue.Title
 		t.StrUrl = *event.Payload.Comment.HtmlUrl
 	case "IssuesEvent":
-		t.StrTxt = "Issue#" + strconv.FormatInt(*event.Payload.Issue.Number, 10)
+		t.StrTxtPrefix = "Issue#" + strconv.FormatInt(*event.Payload.Issue.Number, 10)
 		switch *event.Payload.Action {
 		case "labeled":
-			t.StrTxt += " label: " + event.Payload.Labels.Names()
+			t.StrTxt = "label: " + event.Payload.Labels.Names()
 		default:
-			t.StrTxt += " " + *event.Payload.Issue.Title
+			t.StrTxt = *event.Payload.Issue.Title
 		}
 		t.StrUrl = *event.Payload.Issue.HtmlUrl
 	case "PullRequestEvent":
-		t.StrTxt = "PR#" + strconv.FormatInt(*event.Payload.PR.Number, 10)
+		t.StrTxtPrefix = "PR#" + strconv.FormatInt(*event.Payload.PR.Number, 10)
 		switch *event.Payload.Action {
 		case "labeled":
-			t.StrTxt += " label: " + event.Payload.Labels.Names()
+			t.StrTxt = "label: " + event.Payload.Labels.Names()
 		}
 		t.StrUrl += "/pull/" + strconv.FormatInt(*event.Payload.PR.Number, 10)
 	case "PullRequestReviewCommentEvent":
@@ -102,14 +102,14 @@ func (t *EventInfo) New(event *Event) *EventInfo {
 		case "created":
 			t.StrAction = "commented"
 		}
-		t.StrTxt = "PR#" + strconv.FormatInt(*event.Payload.PR.Number, 10)
+		t.StrTxtPrefix = "PR#" + strconv.FormatInt(*event.Payload.PR.Number, 10)
 		t.StrUrl = *event.Payload.Comment.HtmlUrl
 	case "PullRequestReviewEvent":
 		switch *event.Payload.Action {
 		case "created":
 			t.StrAction = "reviewed"
 		}
-		t.StrTxt = "PR#" + strconv.FormatInt(*event.Payload.PR.Number, 10)
+		t.StrTxtPrefix = "PR#" + strconv.FormatInt(*event.Payload.PR.Number, 10)
 		t.StrUrl = *event.Payload.Review.HtmlUrl
 	case "ReleaseEvent":
 		t.StrUrl = *event.Payload.Release.HtmlUrl
@@ -145,6 +145,7 @@ func (t *EventInfoList) Print(all, showTime, showType, showUrl bool, filter []st
 	)
 
 	for _, info := range *t {
+		strTxt := info.StrTxt
 		if len(filter) > 0 && MatchFilter(filter, info.StrAction, info.StrTypeAction, info.StrType) {
 			continue
 		}
@@ -164,8 +165,12 @@ func (t *EventInfoList) Print(all, showTime, showType, showUrl bool, filter []st
 		if showUrl {
 			info.StrLogin = global.URL_GITHUB + "/" + info.StrLogin
 			info.StrRepo = info.StrUrl
+		} else {
+			if len(info.StrTxtPrefix) > 0 {
+				strTxt = info.StrTxtPrefix + " " + strTxt
+			}
 		}
-		fmt.Fprintln(tabWriter, strings.Join([]string{info.StrTime, info.StrLogin, info.StrAction, info.StrRepo + " " + info.StrTxt}, "\t"))
+		fmt.Fprintln(tabWriter, strings.Join([]string{info.StrTime, info.StrLogin, info.StrAction, info.StrRepo + " " + strTxt}, "\t"))
 	}
 	tabWriter.Flush()
 }

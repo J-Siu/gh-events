@@ -10,3 +10,7 @@
 - v1.1.3
   - support label
   - deduplicate event output
+- v1.1.4
+  - don't print prefix in url mode
+  - fix CreateEvent
+  - rename Labels.String() to Labels.Names() to be more specific
