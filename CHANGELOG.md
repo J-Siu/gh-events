@@ -7,3 +7,6 @@
   - support json output filter
 - v1.1.2
   - filter support original action string
+- v1.1.3
+  - support label
+  - deduplicate event output

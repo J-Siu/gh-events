@@ -20,9 +20,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package global
+package lib
 
-const (
-	STR_SKIPPED = "SKIPPED"
-	URL_GITHUB  = "https://github.com"
-)
+import "strings"
+
+func MatchFilter(filter []string, strAction, strPayloadAction, strType string) bool {
+	return !(strAction != "" && matchSubstrings(filter, strAction) ||
+		strPayloadAction != "" && matchSubstrings(filter, strPayloadAction) ||
+		strType != "" && matchSubstrings(filter, strType))
+}
+
+// return true if str contain any of the substrings, case insensitive
+func matchSubstrings(substrings []string, str string) bool {
+	for _, s := range substrings {
+		if strings.Contains(strings.ToLower(str), strings.ToLower(s)) {
+			return true
+		}
+	}
+	return false
+}

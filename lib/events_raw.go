@@ -20,9 +20,45 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package global
+package lib
 
-const (
-	STR_SKIPPED = "SKIPPED"
-	URL_GITHUB  = "https://github.com"
+import (
+	"fmt"
+
+	"github.com/J-Siu/go-helper/v2/strany"
 )
+
+// EventsRaw is basically array of map struct return from client.Get()
+type EventsRaw []any
+
+func (t *EventsRaw) Print(filter []string) {
+	var (
+		printed      bool
+		printedCount int
+	)
+
+	fmt.Print("[")
+	for _, e := range *t {
+		var (
+			strAction string
+			strType   string
+		)
+		strType, _ = e.(map[string]any)["type"].(string)
+		strAction, _ = e.(map[string]any)["payload"].(map[string]any)["action"].(string)
+		if len(filter) > 0 && MatchFilter(filter, strAction, "", strType) {
+			continue
+		}
+		if printed {
+			fmt.Println(",")
+		} else {
+			fmt.Println()
+		}
+		fmt.Print(*strany.String(e))
+		printed = true
+		printedCount++
+	}
+	if printedCount > 0 {
+		fmt.Println()
+	}
+	fmt.Println("]")
+}

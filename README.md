@@ -6,6 +6,14 @@ List Github api `users/<USER>/received_events` output.
 
 ### gh cli
 
+Install
+
+```sh
+gh extension install https://github.com/J-Siu/gh-events
+```
+
+List events
+
 ```sh
 gh events
 ```

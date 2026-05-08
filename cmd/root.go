@@ -55,14 +55,17 @@ var rootCmd = &cobra.Command{
 			}
 
 			if global.Flag.Json {
-				var events lib.EventsJson
-				if err = client.Get(endpoint, &events); err == nil {
-					events.Print(global.Flag.Filter)
+				var raw lib.EventsRaw
+				if err = client.Get(endpoint, &raw); err == nil {
+					raw.Print(global.Flag.Filter)
 				}
 			} else {
-				var events lib.Events
+				var (
+					events   lib.Events
+					infoList lib.EventInfoList
+				)
 				if err = client.Get(endpoint, &events); err == nil {
-					events.Print(global.Flag.All, global.Flag.Time, global.Flag.Type, global.Flag.Url, global.Flag.Filter)
+					infoList.New(&events).Print(global.Flag.All, global.Flag.Time, global.Flag.Type, global.Flag.Url, global.Flag.Filter)
 				}
 			}
 		}
