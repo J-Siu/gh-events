@@ -85,7 +85,7 @@ func (t *EventInfo) New(event *Event) *EventInfo {
 		t.StrTxt = "Issue#" + strconv.FormatInt(*event.Payload.Issue.Number, 10)
 		switch *event.Payload.Action {
 		case "labeled":
-			t.StrTxt += " label: " + event.Payload.Labels.String()
+			t.StrTxt += " label: " + event.Payload.Labels.Names()
 		default:
 			t.StrTxt += " " + *event.Payload.Issue.Title
 		}
@@ -94,7 +94,7 @@ func (t *EventInfo) New(event *Event) *EventInfo {
 		t.StrTxt = "PR#" + strconv.FormatInt(*event.Payload.PR.Number, 10)
 		switch *event.Payload.Action {
 		case "labeled":
-			t.StrTxt += " label: " + event.Payload.Labels.String()
+			t.StrTxt += " label: " + event.Payload.Labels.Names()
 		}
 		t.StrUrl += "/pull/" + strconv.FormatInt(*event.Payload.PR.Number, 10)
 	case "PullRequestReviewCommentEvent":

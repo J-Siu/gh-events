@@ -100,12 +100,13 @@ type Label struct {
 
 type Labels []Label
 
-func (t *Labels) String() (s string) {
+// returns a comma-separated string of all labels' names
+func (t *Labels) Names() (n string) {
 	for i, label := range *t {
 		if i > 0 {
-			s += ", "
+			n += ", "
 		}
-		s += *label.Name
+		n += *label.Name
 	}
-	return s
+	return n
 }
