@@ -22,19 +22,43 @@ THE SOFTWARE.
 
 package lib
 
-type Event struct {
-	EventProperties
-}
+import (
+	"fmt"
 
-type EventProperties struct {
-	Actor     *Actor   `json:"actor"`
-	CreatedAt *string  `json:"created_at"`
-	Id        *string  `json:"id"`
-	Org       *Actor   `json:"org,omitempty"`
-	Payload   *Payload `json:"payload"`
-	Public    *bool    `json:"public"`
-	Repo      *Repo    `json:"repo"`
-	Type      *string  `json:"type"`
-}
+	"github.com/J-Siu/go-helper/v2/strany"
+)
 
-type Events []Event
+// Array of maps return by client.Get()
+type EventMaps []any
+
+func (t *EventMaps) Print(filter []string) {
+	var (
+		printed      bool
+		printedCount int
+	)
+
+	fmt.Print("[")
+	for _, e := range *t {
+		var (
+			strAction string
+			strType   string
+		)
+		strType, _ = e.(map[string]any)["type"].(string)
+		strAction, _ = e.(map[string]any)["payload"].(map[string]any)["action"].(string)
+		if len(filter) > 0 && MatchFilter(filter, strAction, "", strType) {
+			continue
+		}
+		if printed {
+			fmt.Println(",")
+		} else {
+			fmt.Println()
+		}
+		fmt.Print(*strany.String(e))
+		printed = true
+		printedCount++
+	}
+	if printedCount > 0 {
+		fmt.Println()
+	}
+	fmt.Println("]")
+}

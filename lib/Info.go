@@ -29,10 +29,11 @@ import (
 	"strings"
 
 	"github.com/J-Siu/gh-events/global"
+	"github.com/J-Siu/gh-events/schema"
 	"github.com/juju/ansiterm"
 )
 
-type EventInfo struct {
+type Info struct {
 	StrAction     string // custom action name, eg. created -> commented
 	StrLogin      string
 	StrRepo       string
@@ -44,7 +45,7 @@ type EventInfo struct {
 	StrUrl        string // url for PR, issue, comment, publish, depends on event type, default to repo url
 }
 
-func (t *EventInfo) New(event *Event) *EventInfo {
+func (t *Info) New(event *schema.Event) *Info {
 	var (
 		skip bool
 	)
@@ -126,11 +127,11 @@ func (t *EventInfo) New(event *Event) *EventInfo {
 	return t
 }
 
-type EventInfoList []*EventInfo
+type InfoList []*Info
 
-func (t *EventInfoList) New(events *Events) *EventInfoList {
+func (t *InfoList) New(events *schema.Events) *InfoList {
 	for _, event := range *events {
-		var info EventInfo
+		var info Info
 		info.New(&event)
 		if !t.Exist(&info) {
 			*t = append(*t, &info)
@@ -139,7 +140,7 @@ func (t *EventInfoList) New(events *Events) *EventInfoList {
 	return t
 }
 
-func (t *EventInfoList) Print(all, showTime, showType, showUrl bool, filter []string) {
+func (t *InfoList) Print(all, showTime, showType, showUrl bool, filter []string) {
 	var (
 		tabWriter = ansiterm.NewTabWriter(os.Stdout, 1, 1, 1, ' ', 0)
 	)
@@ -175,7 +176,7 @@ func (t *EventInfoList) Print(all, showTime, showType, showUrl bool, filter []st
 	tabWriter.Flush()
 }
 
-func (t *EventInfoList) Exist(info *EventInfo) bool {
+func (t *InfoList) Exist(info *Info) bool {
 	for _, i := range *t {
 		if i.StrLogin == info.StrLogin &&
 			i.StrTxt == info.StrTxt &&

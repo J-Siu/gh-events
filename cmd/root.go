@@ -28,6 +28,7 @@ import (
 
 	"github.com/J-Siu/gh-events/global"
 	"github.com/J-Siu/gh-events/lib"
+	"github.com/J-Siu/gh-events/schema"
 	"github.com/cli/go-gh/v2/pkg/api"
 	"github.com/spf13/cobra"
 )
@@ -37,35 +38,28 @@ var rootCmd = &cobra.Command{
 	Short:   "List Github api 'users/<USER>/received_events' output.",
 	Version: global.Version,
 	Run: func(cmd *cobra.Command, args []string) {
-		var (
-			actor    lib.Actor
-			endpoint string
-		)
 
-		// login user
 		client, err := api.DefaultRESTClient()
 		if err == nil {
-			err = client.Get("user", &actor)
-		}
-
-		if err == nil {
-			endpoint = "users/" + *actor.Login + "/received_events"
-			if global.Flag.Public {
-				endpoint += "/public"
-			}
-
-			if global.Flag.Json {
-				var raw lib.EventsRaw
-				if err = client.Get(endpoint, &raw); err == nil {
-					raw.Print(global.Flag.Filter)
+			var actor schema.Actor
+			if err = client.Get("user", &actor); err == nil {
+				var endpoint = "users/" + *actor.Login + "/received_events"
+				if global.Flag.Public {
+					endpoint += "/public"
 				}
-			} else {
-				var (
-					events   lib.Events
-					infoList lib.EventInfoList
-				)
-				if err = client.Get(endpoint, &events); err == nil {
-					infoList.New(&events).Print(global.Flag.All, global.Flag.Time, global.Flag.Type, global.Flag.Url, global.Flag.Filter)
+				if global.Flag.Json {
+					var maps lib.EventMaps
+					if err = client.Get(endpoint, &maps); err == nil {
+						maps.Print(global.Flag.Filter)
+					}
+				} else {
+					var (
+						events   schema.Events
+						infoList lib.InfoList
+					)
+					if err = client.Get(endpoint, &events); err == nil {
+						infoList.New(&events).Print(global.Flag.All, global.Flag.Time, global.Flag.Type, global.Flag.Url, global.Flag.Filter)
+					}
 				}
 			}
 		}
