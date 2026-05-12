@@ -33,7 +33,7 @@ import (
 	"github.com/juju/ansiterm"
 )
 
-type Info struct {
+type EventInfo struct {
 	StrAction     string // custom action name, eg. created -> commented
 	StrLogin      string
 	StrRepo       string
@@ -45,7 +45,7 @@ type Info struct {
 	StrUrl        string // url for PR, issue, comment, publish, depends on event type, default to repo url
 }
 
-func (t *Info) New(event *schema.Event) *Info {
+func (t *EventInfo) New(event *schema.Event) *EventInfo {
 	var (
 		skip bool
 	)
@@ -127,43 +127,57 @@ func (t *Info) New(event *schema.Event) *Info {
 	return t
 }
 
-type InfoList []*Info
+type EventInfos struct {
+	*OutputProperties
+	List []*EventInfo
+}
 
-func (t *InfoList) New(events *schema.Events) *InfoList {
+func (t *EventInfos) New(op *OutputProperties, events *[]schema.Event) *EventInfos {
+	t.OutputProperties = op
 	for _, event := range *events {
-		var info Info
+		var info EventInfo
 		info.New(&event)
-		if !t.Exist(&info) {
-			*t = append(*t, &info)
+		if !t.Has(&info) {
+			t.List = append(t.List, &info)
 		}
 	}
 	return t
 }
 
-func (t *InfoList) Print(all, showTime, showType, showUrl bool, filter []string) {
+func (t *EventInfos) Filter() *EventInfos {
+	n := new(EventInfos)
+	n.OutputProperties = t.OutputProperties
+	for _, e := range t.List {
+		if len(t.Filters) > 0 && MatchFilter(t.Filters, e.StrAction, e.StrTypeAction, e.StrType) {
+			continue
+		}
+		n.List = append(n.List, e)
+	}
+	return n
+}
+
+func (t *EventInfos) String() string {
 	var (
-		tabWriter = ansiterm.NewTabWriter(os.Stdout, 1, 1, 1, ' ', 0)
+		strBuilder strings.Builder
+		tabWriter  = ansiterm.NewTabWriter(os.Stdout, 1, 1, 1, ' ', 0)
 	)
 
-	for _, info := range *t {
+	for _, info := range t.List {
 		strTxt := info.StrTxt
-		if len(filter) > 0 && MatchFilter(filter, info.StrAction, info.StrTypeAction, info.StrType) {
+		if !t.All && (info.StrAction == global.STR_SKIPPED) {
 			continue
 		}
-		if !all && (info.StrAction == global.STR_SKIPPED) {
-			continue
-		}
-		if !showTime {
+		if !t.ShowTime {
 			info.StrTime = ""
 		}
-		if showType {
+		if t.ShowType {
 			if info.StrTypeAction == "" {
 				info.StrAction += "\t(" + info.StrType + ")"
 			} else {
 				info.StrAction += "\t(" + info.StrType + ":" + info.StrTypeAction + ")"
 			}
 		}
-		if showUrl {
+		if t.ShowUrl {
 			info.StrLogin = global.URL_GITHUB + "/" + info.StrLogin
 			info.StrRepo = info.StrUrl
 		} else {
@@ -174,10 +188,11 @@ func (t *InfoList) Print(all, showTime, showType, showUrl bool, filter []string)
 		fmt.Fprintln(tabWriter, strings.Join([]string{info.StrTime, info.StrLogin, info.StrAction, info.StrRepo + " " + strTxt}, "\t"))
 	}
 	tabWriter.Flush()
+	return strBuilder.String()
 }
 
-func (t *InfoList) Exist(info *Info) bool {
-	for _, i := range *t {
+func (t *EventInfos) Has(info *EventInfo) bool {
+	for _, i := range t.List {
 		if i.StrLogin == info.StrLogin &&
 			i.StrTxt == info.StrTxt &&
 			i.StrType == info.StrType &&

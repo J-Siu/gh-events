@@ -23,42 +23,38 @@ THE SOFTWARE.
 package lib
 
 import (
-	"fmt"
-
 	"github.com/J-Siu/go-helper/v2/strany"
 )
 
 // Array of maps return by client.Get()
-type EventMaps []any
+type EventMaps struct {
+	*OutputProperties
+	List []any
+}
 
-func (t *EventMaps) Print(filter []string) {
-	var (
-		printed      bool
-		printedCount int
-	)
+func (t *EventMaps) New(op *OutputProperties, maps *[]any) *EventMaps {
+	t.OutputProperties = op
+	t.List = *maps
+	return t
+}
 
-	fmt.Print("[")
-	for _, e := range *t {
+func (t *EventMaps) Filter() *EventMaps {
+	n := new(EventMaps)
+	n.OutputProperties = t.OutputProperties
+	n.List = []any{}
+	for _, e := range t.List {
 		var (
 			strAction string
 			strType   string
 		)
 		strType, _ = e.(map[string]any)["type"].(string)
 		strAction, _ = e.(map[string]any)["payload"].(map[string]any)["action"].(string)
-		if len(filter) > 0 && MatchFilter(filter, strAction, "", strType) {
+		if len(t.Filters) > 0 && MatchFilter(t.Filters, strAction, "", strType) {
 			continue
 		}
-		if printed {
-			fmt.Println(",")
-		} else {
-			fmt.Println()
-		}
-		fmt.Print(*strany.String(e))
-		printed = true
-		printedCount++
+		n.List = append(n.List, e)
 	}
-	if printedCount > 0 {
-		fmt.Println()
-	}
-	fmt.Println("]")
+	return n
 }
+
+func (t *EventMaps) String() string { return *strany.String(t) }

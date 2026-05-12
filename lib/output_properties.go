@@ -20,19 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-package schema
+package lib
 
-type Event struct {
-	EventProperties
-}
-
-type EventProperties struct {
-	Actor     *Actor   `json:"actor"`
-	CreatedAt *string  `json:"created_at"`
-	Id        *string  `json:"id"`
-	Org       *Actor   `json:"org,omitempty"`
-	Payload   *Payload `json:"payload"`
-	Public    *bool    `json:"public"`
-	Repo      *Repo    `json:"repo"`
-	Type      *string  `json:"type"`
+type OutputProperties struct {
+	All      bool
+	Filters  []string
+	ShowTime bool
+	ShowType bool
+	ShowUrl  bool
 }

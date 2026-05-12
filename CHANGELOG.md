@@ -14,3 +14,5 @@
   - don't print prefix in url mode
   - fix CreateEvent
   - rename Labels.String() to Labels.Names() to be more specific
+- v1.1.5
+  - refactor EventInfo and EventMap

@@ -38,33 +38,43 @@ var rootCmd = &cobra.Command{
 	Short:   "List Github api 'users/<USER>/received_events' output.",
 	Version: global.Version,
 	Run: func(cmd *cobra.Command, args []string) {
+		var (
+			client, err = api.DefaultRESTClient()
+			endpoint    string
+			events      fmt.Stringer
+			op          = lib.OutputProperties{
+				All:      global.Flag.All,
+				Filters:  global.Flag.Filter,
+				ShowTime: global.Flag.Time,
+				ShowType: global.Flag.Type,
+				ShowUrl:  global.Flag.Url,
+			}
+		)
 
-		client, err := api.DefaultRESTClient()
 		if err == nil {
 			var actor schema.Actor
 			if err = client.Get("user", &actor); err == nil {
-				var endpoint = "users/" + *actor.Login + "/received_events"
+				endpoint = "users/" + *actor.Login + "/received_events"
 				if global.Flag.Public {
 					endpoint += "/public"
 				}
 				if global.Flag.Json {
-					var maps lib.EventMaps
-					if err = client.Get(endpoint, &maps); err == nil {
-						maps.Print(global.Flag.Filter)
+					var resp []any
+					if err = client.Get(endpoint, &resp); err == nil {
+						events = new(lib.EventMaps).New(&op, &resp).Filter()
 					}
 				} else {
-					var (
-						events   schema.Events
-						infoList lib.InfoList
-					)
-					if err = client.Get(endpoint, &events); err == nil {
-						infoList.New(&events).Print(global.Flag.All, global.Flag.Time, global.Flag.Type, global.Flag.Url, global.Flag.Filter)
+					var resp []schema.Event
+					if err = client.Get(endpoint, &resp); err == nil {
+						events = new(lib.EventInfos).New(&op, &resp).Filter()
 					}
 				}
 			}
 		}
 
-		if err != nil {
+		if err == nil {
+			fmt.Println(events)
+		} else {
 			fmt.Println(err)
 		}
 	},
