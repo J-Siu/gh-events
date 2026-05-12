@@ -73,7 +73,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		if err == nil {
-			fmt.Println(events)
+			fmt.Print(events)
 		} else {
 			fmt.Println(err)
 		}

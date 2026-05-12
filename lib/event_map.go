@@ -57,4 +57,4 @@ func (t *EventMaps) Filter() *EventMaps {
 	return n
 }
 
-func (t *EventMaps) String() string { return *strany.String(t) }
+func (t *EventMaps) String() string { return *strany.String(t) + "\n" }
