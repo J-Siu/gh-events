@@ -24,7 +24,6 @@ package lib
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 
@@ -159,7 +158,7 @@ func (t *EventInfos) Filter() *EventInfos {
 func (t *EventInfos) String() string {
 	var (
 		strBuilder strings.Builder
-		tabWriter  = ansiterm.NewTabWriter(os.Stdout, 1, 1, 1, ' ', 0)
+		tabWriter  = ansiterm.NewTabWriter(&strBuilder, 1, 1, 1, ' ', 0)
 	)
 
 	for _, info := range t.List {
