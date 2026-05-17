@@ -18,3 +18,5 @@
   - refactor EventInfo and EventMap
 - v1.1.6
   - fix output newline
+- v1.1.7
+  - update dependencies
