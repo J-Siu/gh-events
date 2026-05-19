@@ -81,7 +81,7 @@ func (t *EventInfo) New(event *schema.Event) *EventInfo {
 	case "IssuesEvent":
 		t.StrTxtPrefix = "Issue#" + strconv.FormatInt(*event.Payload.Issue.Number, 10)
 		switch *event.Payload.Action {
-		case "labeled":
+		case "labeled", "unlabeled":
 			t.StrTxt = "label: " + event.Payload.Labels.Names()
 		default:
 			t.StrTxt = *event.Payload.Issue.Title
@@ -90,7 +90,7 @@ func (t *EventInfo) New(event *schema.Event) *EventInfo {
 	case "PullRequestEvent":
 		t.StrTxtPrefix = "PR#" + strconv.FormatInt(*event.Payload.PR.Number, 10)
 		switch *event.Payload.Action {
-		case "labeled":
+		case "labeled", "unlabeled":
 			t.StrTxt = "label: " + event.Payload.Labels.Names()
 		}
 		t.StrUrl += "/pull/" + strconv.FormatInt(*event.Payload.PR.Number, 10)
