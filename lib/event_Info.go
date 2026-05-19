@@ -33,6 +33,7 @@ import (
 )
 
 type EventInfo struct {
+	Skipped       bool
 	StrAction     string // custom action name, eg. created -> commented
 	StrLogin      string
 	StrRepo       string
@@ -45,10 +46,6 @@ type EventInfo struct {
 }
 
 func (t *EventInfo) New(event *schema.Event) *EventInfo {
-	var (
-		skip bool
-	)
-
 	t.StrLogin = *event.Actor.Login
 	t.StrRepo = *event.Repo.Name
 	t.StrTime = *event.CreatedAt
@@ -84,7 +81,7 @@ func (t *EventInfo) New(event *schema.Event) *EventInfo {
 	case "IssuesEvent":
 		t.StrTxtPrefix = "Issue#" + strconv.FormatInt(*event.Payload.Issue.Number, 10)
 		switch *event.Payload.Action {
-		case "labeled":
+		case "labeled", "unlabeled":
 			t.StrTxt = "label: " + event.Payload.Labels.Names()
 		default:
 			t.StrTxt = *event.Payload.Issue.Title
@@ -93,7 +90,7 @@ func (t *EventInfo) New(event *schema.Event) *EventInfo {
 	case "PullRequestEvent":
 		t.StrTxtPrefix = "PR#" + strconv.FormatInt(*event.Payload.PR.Number, 10)
 		switch *event.Payload.Action {
-		case "labeled":
+		case "labeled", "unlabeled":
 			t.StrTxt = "label: " + event.Payload.Labels.Names()
 		}
 		t.StrUrl += "/pull/" + strconv.FormatInt(*event.Payload.PR.Number, 10)
@@ -116,11 +113,7 @@ func (t *EventInfo) New(event *schema.Event) *EventInfo {
 	case "WatchEvent":
 		t.StrAction = "starred"
 	default:
-		skip = true
-	}
-
-	if skip {
-		t.StrAction = global.STR_SKIPPED
+		t.Skipped = true
 	}
 
 	return t
@@ -162,12 +155,15 @@ func (t *EventInfos) String() string {
 	)
 
 	for _, info := range t.List {
-		strTxt := info.StrTxt
-		if !t.All && (info.StrAction == global.STR_SKIPPED) {
+		if !t.All && info.Skipped {
 			continue
 		}
+		strTxt := info.StrTxt
 		if !t.ShowTime {
 			info.StrTime = ""
+		}
+		if info.Skipped {
+			info.StrAction = global.STR_SKIPPED
 		}
 		if t.ShowType {
 			if info.StrTypeAction == "" {
