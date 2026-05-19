@@ -20,3 +20,7 @@
   - fix output newline
 - v1.1.7
   - update dependencies
+- v1.1.8
+  - EventInfo: add property: Skipped
+  - fix: print should output list only
+  - payload action "labeled": get label names
