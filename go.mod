@@ -3,7 +3,7 @@ module github.com/J-Siu/gh-events
 go 1.26.3
 
 require (
-	github.com/J-Siu/go-helper/v2 v2.8.2
+	github.com/J-Siu/go-helper/v2 v2.8.4
 	github.com/cli/go-gh/v2 v2.13.0
 	github.com/juju/ansiterm v1.0.0
 	github.com/spf13/cobra v1.10.2
@@ -25,7 +25,7 @@ require (
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/thlib/go-timezone-local v0.0.7 // indirect
-	golang.org/x/sys v0.44.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
 	golang.org/x/term v0.43.0 // indirect
 	golang.org/x/text v0.37.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

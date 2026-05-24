@@ -24,3 +24,6 @@
   - EventInfo: add property: Skipped
   - fix: print should output list only
   - payload action "labeled": get label names
+- v1.1.9
+  - assign flag to output properties directly
+  - better var names
