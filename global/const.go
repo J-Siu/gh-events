@@ -23,6 +23,8 @@ THE SOFTWARE.
 package global
 
 const (
-	STR_SKIPPED = "SKIPPED"
-	URL_GITHUB  = "https://github.com"
+	STR_SKIPPED           = "SKIPPED"
+	STR_TIME_FORMAT_LOCAL = "2006-01-02 15:04:05"
+	STR_TIME_FORMAT_UTC   = "2006-01-02T15:04:05Z"
+	URL_GITHUB            = "https://github.com"
 )

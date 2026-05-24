@@ -23,9 +23,10 @@ THE SOFTWARE.
 package lib
 
 type OutputProperties struct {
-	All      bool
-	Filters  []string
-	ShowTime bool
-	ShowType bool
-	ShowUrl  bool
+	All       bool
+	Filters   []string
+	LocalTime bool
+	ShowTime  bool
+	ShowType  bool
+	ShowUrl   bool
 }

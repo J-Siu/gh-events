@@ -26,6 +26,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/J-Siu/gh-events/global"
 	"github.com/J-Siu/gh-events/schema"
@@ -148,6 +149,19 @@ func (t *EventInfos) Filter() *EventInfos {
 	return n
 }
 
+func (t *EventInfos) Has(info *EventInfo) bool {
+	for _, i := range t.List {
+		if i.StrLogin == info.StrLogin &&
+			i.StrTxt == info.StrTxt &&
+			i.StrType == info.StrType &&
+			i.StrTypeAction == info.StrTypeAction &&
+			i.StrUrl == info.StrUrl {
+			return true
+		}
+	}
+	return false
+}
+
 func (t *EventInfos) String() string {
 	var (
 		strBuilder strings.Builder
@@ -159,7 +173,13 @@ func (t *EventInfos) String() string {
 			continue
 		}
 		strTxt := info.StrTxt
-		if !t.ShowTime {
+		if t.ShowTime {
+			if t.LocalTime {
+				if utc, err := time.Parse(global.STR_TIME_FORMAT_UTC, info.StrTime); err == nil {
+					info.StrTime = utc.Local().Format(global.STR_TIME_FORMAT_LOCAL)
+				}
+			}
+		} else {
 			info.StrTime = ""
 		}
 		if info.Skipped {
@@ -184,17 +204,4 @@ func (t *EventInfos) String() string {
 	}
 	tabWriter.Flush()
 	return strBuilder.String()
-}
-
-func (t *EventInfos) Has(info *EventInfo) bool {
-	for _, i := range t.List {
-		if i.StrLogin == info.StrLogin &&
-			i.StrTxt == info.StrTxt &&
-			i.StrType == info.StrType &&
-			i.StrTypeAction == info.StrTypeAction &&
-			i.StrUrl == info.StrUrl {
-			return true
-		}
-	}
-	return false
 }

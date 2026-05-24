@@ -43,11 +43,12 @@ var rootCmd = &cobra.Command{
 			endpoint    string
 			events      fmt.Stringer
 			op          = lib.OutputProperties{
-				All:      global.Flag.All,
-				Filters:  global.Flag.Filter,
-				ShowTime: global.Flag.Time,
-				ShowType: global.Flag.Type,
-				ShowUrl:  global.Flag.Url,
+				All:       global.Flag.All,
+				Filters:   global.Flag.Filter,
+				LocalTime: global.Flag.TimeLocal,
+				ShowTime:  global.Flag.Time,
+				ShowType:  global.Flag.Type,
+				ShowUrl:   global.Flag.Url,
 			}
 		)
 
@@ -91,6 +92,7 @@ func init() {
 	rootCmd.Flags().BoolVarP(&global.Flag.Json, "json", "j", false, "show raw json")
 	rootCmd.Flags().BoolVarP(&global.Flag.Public, "public", "p", false, "show public events")
 	rootCmd.Flags().BoolVarP(&global.Flag.Time, "create-time", "c", false, "show create time")
+	rootCmd.Flags().BoolVarP(&global.Flag.TimeLocal, "local-time", "l", false, "show create time in local timezone")
 	rootCmd.Flags().BoolVarP(&global.Flag.Type, "type", "t", false, "show event type")
 	rootCmd.Flags().BoolVarP(&global.Flag.Url, "url", "u", false, "show full url")
 	rootCmd.Flags().StringArrayVarP(&global.Flag.Filter, "filter", "f", []string{}, "show events by action, type")
