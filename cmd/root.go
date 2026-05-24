@@ -33,6 +33,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var op = lib.OutputProperties{}
+
 var rootCmd = &cobra.Command{
 	Use:     "gh-events",
 	Short:   "List Github api 'users/<USER>/received_events' output.",
@@ -42,14 +44,6 @@ var rootCmd = &cobra.Command{
 			client, err = api.DefaultRESTClient()
 			endpoint    string
 			events      fmt.Stringer
-			op          = lib.OutputProperties{
-				All:       global.Flag.All,
-				Filters:   global.Flag.Filter,
-				LocalTime: global.Flag.TimeLocal,
-				ShowTime:  global.Flag.Time,
-				ShowType:  global.Flag.Type,
-				ShowUrl:   global.Flag.Url,
-			}
 		)
 
 		if err == nil {
@@ -88,14 +82,14 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.Flags().BoolVarP(&global.Flag.All, "all", "a", false, "show skipped event")
-	rootCmd.Flags().BoolVarP(&global.Flag.Json, "json", "j", false, "show json (ignore all flags except --filter)")
+	rootCmd.Flags().BoolVarP(&global.Flag.Json, "json", "j", false, "show json (all flags ignored except -f, -p)")
 	rootCmd.Flags().BoolVarP(&global.Flag.Public, "public", "p", false, "show public events")
-	rootCmd.Flags().BoolVarP(&global.Flag.Time, "create-time", "c", false, "show create time(UTC)")
-	rootCmd.Flags().BoolVarP(&global.Flag.TimeLocal, "local-time", "l", false, "show create time(local)")
-	rootCmd.Flags().BoolVarP(&global.Flag.Type, "type", "t", false, "show event type")
-	rootCmd.Flags().BoolVarP(&global.Flag.Url, "url", "u", false, "show full url")
-	rootCmd.Flags().StringArrayVarP(&global.Flag.Filter, "filter", "f", []string{}, "show events by action, type")
+	rootCmd.Flags().BoolVarP(&op.All, "all", "a", false, "show skipped event")
+	rootCmd.Flags().BoolVarP(&op.ShowType, "type", "t", false, "show event type")
+	rootCmd.Flags().BoolVarP(&op.ShowUrl, "url", "u", false, "show full url")
+	rootCmd.Flags().BoolVarP(&op.TimeLocal, "local-time", "l", false, "show create time(local)")
+	rootCmd.Flags().BoolVarP(&op.TimeUTC, "create-time", "c", false, "show create time(UTC)")
+	rootCmd.Flags().StringArrayVarP(&op.Filters, "filter", "f", []string{}, "show events by action, type")
 
 	rootCmd.MarkFlagsMutuallyExclusive("create-time", "local-time")
 }

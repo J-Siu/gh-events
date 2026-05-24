@@ -23,14 +23,8 @@ THE SOFTWARE.
 package global
 
 type TypeFlag struct {
-	All       bool
-	Filter    []string
-	Json      bool
-	Public    bool
-	Time      bool
-	TimeLocal bool
-	Type      bool
-	Url       bool
+	Json   bool
+	Public bool
 }
 
 var Flag TypeFlag

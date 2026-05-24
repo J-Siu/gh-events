@@ -25,8 +25,8 @@ package lib
 type OutputProperties struct {
 	All       bool
 	Filters   []string
-	LocalTime bool
-	ShowTime  bool
+	TimeLocal bool
+	TimeUTC   bool
 	ShowType  bool
 	ShowUrl   bool
 }

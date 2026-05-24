@@ -28,10 +28,11 @@ Usage:
 
 Flags:
   -a, --all                  show skipped event
-  -c, --create-time          show create time
+  -c, --create-time          show create time(UTC)
   -f, --filter stringArray   show events by action, type
   -h, --help                 help for gh-events
-  -j, --json                 show raw json
+  -j, --json                 show json (all flags ignored except -f -p)
+  -l, --local-time           show create time(local)
   -p, --public               show public events
   -t, --type                 show event type
   -u, --url                  show full url

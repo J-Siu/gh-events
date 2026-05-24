@@ -33,16 +33,17 @@ import (
 	"github.com/juju/ansiterm"
 )
 
+// processed event info from GitHub event
 type EventInfo struct {
-	Skipped       bool
+	Skipped       bool   // whether event is fully handled by New()
 	StrAction     string // custom action name, eg. created -> commented
-	StrLogin      string
-	StrRepo       string
-	StrTime       string
-	StrTxt        string
-	StrTxtPrefix  string
-	StrType       string
-	StrTypeAction string
+	StrLogin      string // original event actor login
+	StrRepo       string // original event repo name
+	StrTime       string // original time string from GitHub in UTC
+	StrTxt        string // usually title of issue and PR, depends on event type
+	StrTxtPrefix  string // prefix for StrTxt, eg. "Issue#", "PR#", etc.
+	StrType       string // original event type
+	StrTypeAction string // original action name from GitHub, eg. created, labeled, etc.
 	StrUrl        string // url for PR, issue, comment, publish, depends on event type, default to repo url
 }
 
@@ -120,6 +121,7 @@ func (t *EventInfo) New(event *schema.Event) *EventInfo {
 	return t
 }
 
+// list of EventInfo, with filter and string functions
 type EventInfos struct {
 	*OutputProperties
 	List []*EventInfo
@@ -173,12 +175,12 @@ func (t *EventInfos) String() string {
 			continue
 		}
 		strTxt := info.StrTxt
-		if t.LocalTime {
+		if t.TimeLocal {
 			if utc, err := time.Parse(global.STR_TIME_FORMAT_UTC, info.StrTime); err == nil {
 				info.StrTime = utc.Local().Format(global.STR_TIME_FORMAT_LOCAL)
 			}
 		}
-		if !t.ShowTime && !t.LocalTime {
+		if !t.TimeUTC && !t.TimeLocal {
 			info.StrTime = ""
 		}
 		if info.Skipped {
