@@ -173,13 +173,12 @@ func (t *EventInfos) String() string {
 			continue
 		}
 		strTxt := info.StrTxt
-		if t.ShowTime {
-			if t.LocalTime {
-				if utc, err := time.Parse(global.STR_TIME_FORMAT_UTC, info.StrTime); err == nil {
-					info.StrTime = utc.Local().Format(global.STR_TIME_FORMAT_LOCAL)
-				}
+		if t.LocalTime {
+			if utc, err := time.Parse(global.STR_TIME_FORMAT_UTC, info.StrTime); err == nil {
+				info.StrTime = utc.Local().Format(global.STR_TIME_FORMAT_LOCAL)
 			}
-		} else {
+		}
+		if !t.ShowTime && !t.LocalTime {
 			info.StrTime = ""
 		}
 		if info.Skipped {
@@ -200,7 +199,7 @@ func (t *EventInfos) String() string {
 				strTxt = info.StrTxtPrefix + " " + strTxt
 			}
 		}
-		fmt.Fprintln(tabWriter, strings.Join([]string{info.StrTime, info.StrLogin, info.StrAction, info.StrRepo + " " + strTxt}, "\t"))
+		fmt.Fprintln(tabWriter, strings.TrimSpace(strings.Join([]string{info.StrTime, info.StrLogin, info.StrAction, info.StrRepo + " " + strTxt}, "\t")))
 	}
 	tabWriter.Flush()
 	return strBuilder.String()
