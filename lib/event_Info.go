@@ -123,36 +123,38 @@ func (t *EventInfo) New(event *schema.Event) *EventInfo {
 
 // list of EventInfo, with filter and string functions
 type EventInfos struct {
-	*OutputProperties
-	List []*EventInfo
+	*EventsProperties
+	List *[]*EventInfo
 }
 
-func (t *EventInfos) New(op *OutputProperties, events *[]schema.Event) *EventInfos {
-	t.OutputProperties = op
-	for _, event := range *events {
+// func (t *EventInfos) New(op *OutputProperties, events *[]schema.Event) *EventInfos {
+func (t *EventInfos) New(op *EventsProperties) IEvents {
+	t.EventsProperties = op
+	t.List = new([]*EventInfo)
+	for _, event := range *t.EventsProperties.Events {
 		var info EventInfo
 		info.New(&event)
 		if !t.Has(&info) {
-			t.List = append(t.List, &info)
+			*t.List = append(*t.List, &info)
 		}
 	}
 	return t
 }
 
-func (t *EventInfos) Filter() *EventInfos {
-	n := new(EventInfos)
-	n.OutputProperties = t.OutputProperties
-	for _, e := range t.List {
-		if len(t.Filters) > 0 && MatchFilter(t.Filters, e.StrAction, e.StrTypeAction, e.StrType) {
+func (t *EventInfos) Filter() IEvents {
+	n := new([]*EventInfo)
+	for _, info := range *t.List {
+		if len(t.Filters) > 0 && MatchFilter(t.Filters, info.StrAction, info.StrTypeAction, info.StrType) {
 			continue
 		}
-		n.List = append(n.List, e)
+		*n = append(*n, info)
 	}
-	return n
+	t.List = n
+	return t
 }
 
 func (t *EventInfos) Has(info *EventInfo) bool {
-	for _, i := range t.List {
+	for _, i := range *t.List {
 		if i.StrLogin == info.StrLogin &&
 			i.StrTxt == info.StrTxt &&
 			i.StrType == info.StrType &&
@@ -170,7 +172,7 @@ func (t *EventInfos) String() string {
 		tabWriter  = ansiterm.NewTabWriter(&strBuilder, 1, 1, 1, ' ', 0)
 	)
 
-	for _, info := range t.List {
+	for _, info := range *t.List {
 		if !t.All && info.Skipped {
 			continue
 		}

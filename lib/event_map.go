@@ -26,35 +26,34 @@ import (
 	"github.com/J-Siu/go-helper/v2/strany"
 )
 
+type EventMap any
+
 // Array of maps return by client.Get()
 type EventMaps struct {
-	*OutputProperties
-	List []any
+	*EventsProperties
 }
 
-func (t *EventMaps) New(op *OutputProperties, maps *[]any) *EventMaps {
-	t.OutputProperties = op
-	t.List = *maps
+func (t *EventMaps) New(op *EventsProperties) IEvents {
+	t.EventsProperties = op
 	return t
 }
 
-func (t *EventMaps) Filter() *EventMaps {
-	n := new(EventMaps)
-	n.OutputProperties = t.OutputProperties
-	n.List = []any{}
-	for _, e := range t.List {
+func (t *EventMaps) Filter() IEvents {
+	n := new([]EventMap)
+	for _, eventMap := range *t.EventsProperties.Maps {
 		var (
 			strAction string
 			strType   string
 		)
-		strType, _ = e.(map[string]any)["type"].(string)
-		strAction, _ = e.(map[string]any)["payload"].(map[string]any)["action"].(string)
+		strType, _ = eventMap.(map[string]any)["type"].(string)
+		strAction, _ = eventMap.(map[string]any)["payload"].(map[string]any)["action"].(string)
 		if len(t.Filters) > 0 && MatchFilter(t.Filters, strAction, "", strType) {
 			continue
 		}
-		n.List = append(n.List, e)
+		*n = append(*n, eventMap)
 	}
-	return n
+	t.Maps = n
+	return t
 }
 
-func (t *EventMaps) String() string { return strany.Any(t.List) + "\n" }
+func (t *EventMaps) String() string { return strany.Any(t.EventsProperties.Maps) + "\n" }
