@@ -27,3 +27,6 @@
 - v1.1.9
   - assign flag to output properties directly
   - better var names
+- v1.1.10
+  - fix: --public show "/received_event", else "/events"
+  - refactor
