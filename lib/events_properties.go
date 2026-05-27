@@ -22,11 +22,17 @@ THE SOFTWARE.
 
 package lib
 
-type OutputProperties struct {
+import "github.com/J-Siu/gh-events/schema"
+
+type EventsProperties struct {
+	// output control
 	All       bool
 	Filters   []string
 	TimeLocal bool
 	TimeUTC   bool
 	ShowType  bool
 	ShowUrl   bool
+	// response data structs
+	Events *[]schema.Event
+	Maps   *[]EventMap
 }

@@ -22,38 +22,8 @@ THE SOFTWARE.
 
 package lib
 
-import (
-	"github.com/J-Siu/go-helper/v2/strany"
-)
-
-type EventMap any
-
-// Array of maps return by client.Get()
-type EventMaps struct {
-	*EventsProperties
+type IEvents interface {
+	Filter() IEvents
+	New(op *EventsProperties) IEvents
+	String() string
 }
-
-func (t *EventMaps) New(op *EventsProperties) IEvents {
-	t.EventsProperties = op
-	return t
-}
-
-func (t *EventMaps) Filter() IEvents {
-	n := new([]EventMap)
-	for _, eventMap := range *t.EventsProperties.Maps {
-		var (
-			strAction string
-			strType   string
-		)
-		strType, _ = eventMap.(map[string]any)["type"].(string)
-		strAction, _ = eventMap.(map[string]any)["payload"].(map[string]any)["action"].(string)
-		if len(t.Filters) > 0 && MatchFilter(t.Filters, strAction, "", strType) {
-			continue
-		}
-		*n = append(*n, eventMap)
-	}
-	t.Maps = n
-	return t
-}
-
-func (t *EventMaps) String() string { return strany.Any(t.EventsProperties.Maps) + "\n" }

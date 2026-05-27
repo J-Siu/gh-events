@@ -33,43 +33,45 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var op = lib.OutputProperties{}
+var op = lib.EventsProperties{}
 
 var rootCmd = &cobra.Command{
 	Use:     "gh-events",
-	Short:   "List Github api 'users/<USER>/received_events' output.",
+	Short:   "List Github api 'users/<USER>/events' output.",
 	Version: global.Version,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			client, err = api.DefaultRESTClient()
 			endpoint    string
-			events      fmt.Stringer
+			events      lib.IEvents
+			response    any
 		)
 
 		if err == nil {
 			var actor schema.Actor
 			if err = client.Get("user", &actor); err == nil {
-				endpoint = "users/" + *actor.Login + "/received_events"
+				endpoint = "users/" + *actor.Login
 				if global.Flag.Public {
-					endpoint += "/public"
+					endpoint += "/received_events"
+				} else {
+					endpoint += "/events"
 				}
 				if global.Flag.Json {
-					var resp []any
-					if err = client.Get(endpoint, &resp); err == nil {
-						events = new(lib.EventMaps).New(&op, &resp).Filter()
-					}
+					events = new(lib.EventMaps)
+					op.Maps = new([]lib.EventMap)
+					response = op.Maps
 				} else {
-					var resp []schema.Event
-					if err = client.Get(endpoint, &resp); err == nil {
-						events = new(lib.EventInfos).New(&op, &resp).Filter()
-					}
+					events = new(lib.EventInfos)
+					op.Events = new([]schema.Event)
+					response = op.Events
+				}
+				if err = client.Get(endpoint, response); err == nil {
+					fmt.Print(events.New(&op).Filter())
 				}
 			}
 		}
 
-		if err == nil {
-			fmt.Print(events)
-		} else {
+		if err != nil {
 			fmt.Println(err)
 		}
 	},
@@ -83,7 +85,7 @@ func Execute() {
 
 func init() {
 	rootCmd.Flags().BoolVarP(&global.Flag.Json, "json", "j", false, "show json (all flags ignored except -f, -p)")
-	rootCmd.Flags().BoolVarP(&global.Flag.Public, "public", "p", false, "show public events")
+	rootCmd.Flags().BoolVarP(&global.Flag.Public, "public", "p", false, "show /received_events")
 	rootCmd.Flags().BoolVarP(&op.All, "all", "a", false, "show skipped event")
 	rootCmd.Flags().BoolVarP(&op.ShowType, "type", "t", false, "show event type")
 	rootCmd.Flags().BoolVarP(&op.ShowUrl, "url", "u", false, "show full url")
