@@ -37,7 +37,7 @@ var op = lib.EventsProperties{}
 
 var rootCmd = &cobra.Command{
 	Use:     "gh-events",
-	Short:   "List Github api 'users/<USER>/received_events' output.",
+	Short:   "List Github api 'users/<USER>/events' output.",
 	Version: global.Version,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
@@ -50,9 +50,11 @@ var rootCmd = &cobra.Command{
 		if err == nil {
 			var actor schema.Actor
 			if err = client.Get("user", &actor); err == nil {
-				endpoint = "users/" + *actor.Login + "/received_events"
+				endpoint = "users/" + *actor.Login
 				if global.Flag.Public {
-					endpoint += "/public"
+					endpoint += "/received_events"
+				} else {
+					endpoint += "/events"
 				}
 				if global.Flag.Json {
 					events = new(lib.EventMaps)
@@ -83,7 +85,7 @@ func Execute() {
 
 func init() {
 	rootCmd.Flags().BoolVarP(&global.Flag.Json, "json", "j", false, "show json (all flags ignored except -f, -p)")
-	rootCmd.Flags().BoolVarP(&global.Flag.Public, "public", "p", false, "show public events")
+	rootCmd.Flags().BoolVarP(&global.Flag.Public, "public", "p", false, "show /received_events")
 	rootCmd.Flags().BoolVarP(&op.All, "all", "a", false, "show skipped event")
 	rootCmd.Flags().BoolVarP(&op.ShowType, "type", "t", false, "show event type")
 	rootCmd.Flags().BoolVarP(&op.ShowUrl, "url", "u", false, "show full url")
