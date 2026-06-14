@@ -30,3 +30,5 @@
 - v1.1.10
   - fix: --public show "/received_event", else "/events"
   - refactor
+- v1.1.11
+  - feat: simplify time option logic
