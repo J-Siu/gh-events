@@ -26,12 +26,12 @@ import "github.com/J-Siu/gh-events/schema"
 
 type EventsProperties struct {
 	// output control
-	All       bool
-	Filters   []string
-	TimeLocal bool
-	TimeUTC   bool
-	ShowType  bool
-	ShowUrl   bool
+	All      bool
+	Filters  []string
+	ShowTime bool
+	ShowType bool
+	ShowUrl  bool
+	Utc      bool
 	// response data structs
 	Events *[]schema.Event
 	Maps   *[]EventMap

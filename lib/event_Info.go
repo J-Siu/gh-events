@@ -177,13 +177,12 @@ func (t *EventInfos) String() string {
 			continue
 		}
 		strTxt := info.StrTxt
-		if t.TimeLocal {
+		if !t.ShowTime {
+			info.StrTime = ""
+		} else if !t.EventsProperties.Utc {
 			if utc, err := time.Parse(global.STR_TIME_FORMAT_UTC, info.StrTime); err == nil {
 				info.StrTime = utc.Local().Format(global.STR_TIME_FORMAT_LOCAL)
 			}
-		}
-		if !t.TimeUTC && !t.TimeLocal {
-			info.StrTime = ""
 		}
 		if info.Skipped {
 			info.StrAction = global.STR_SKIPPED

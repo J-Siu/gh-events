@@ -87,11 +87,9 @@ func init() {
 	rootCmd.Flags().BoolVarP(&global.Flag.Json, "json", "j", false, "show json (all flags ignored except -f, -p)")
 	rootCmd.Flags().BoolVarP(&global.Flag.Public, "public", "p", false, "show /received_events")
 	rootCmd.Flags().BoolVarP(&op.All, "all", "a", false, "show skipped event")
+	rootCmd.Flags().BoolVarP(&op.ShowTime, "create-time", "c", false, "show create time")
 	rootCmd.Flags().BoolVarP(&op.ShowType, "type", "t", false, "show event type")
 	rootCmd.Flags().BoolVarP(&op.ShowUrl, "url", "u", false, "show full url")
-	rootCmd.Flags().BoolVarP(&op.TimeLocal, "local-time", "l", false, "show create time(local)")
-	rootCmd.Flags().BoolVarP(&op.TimeUTC, "create-time", "c", false, "show create time(UTC)")
+	rootCmd.Flags().BoolVarP(&op.Utc, "utc", "", false, "UTC time")
 	rootCmd.Flags().StringArrayVarP(&op.Filters, "filter", "f", []string{}, "show events by action, type")
-
-	rootCmd.MarkFlagsMutuallyExclusive("create-time", "local-time")
 }
