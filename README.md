@@ -21,20 +21,20 @@ gh events
 ### Standalone
 
 ```sh
-List Github api 'users/<USER>/received_events' output.
+List Github api 'users/<USER>/events' output.
 
 Usage:
   gh-events [flags]
 
 Flags:
   -a, --all                  show skipped event
-  -c, --create-time          show create time(UTC)
+  -c, --create-time          show create time
   -f, --filter stringArray   show events by action, type
   -h, --help                 help for gh-events
-  -j, --json                 show json (all flags ignored except -f -p)
-  -l, --local-time           show create time(local)
-  -p, --public               show public events
+  -j, --json                 show json (all flags ignored except -f, -p)
+  -p, --public               show /received_events
   -t, --type                 show event type
   -u, --url                  show full url
+      --utc                  UTC time
   -v, --version              version for gh-events
 ```
